@@ -1,75 +1,25 @@
-![](http://www.yuukinishiyama.com/wp-content/uploads/2019/03/aware-client-v2-eyecatch-01.png)
+## AWARE Mobile Sensing App - Emotion and Behavior Study
 
-## AWARE Framework iOS Client (Version 2)
-[AWARE](http://awareframework.com) is an iOS and Android framework dedicated to instrument, infer, log and share mobile context information,
-for application developers, researchers and smartphone users. AWARE captures hardware-, software-, and human-based data. It encapsulates analysis, machine learning and simplifies conducting user studies in naturalistic and laboratory settings. 
+The AWARE Mobile Sensing App - Emotion and Behavior Study plans to use the mobile sensing app AWARE (https://awareframework.com/) to collect data from participants next semester while using a different app to send them surveys to their phones every two hours. AWARE is an open source software that enables the project to collect data such as GPS, activity, phone use, etc. The project wants to then look at how emotion and emotion regulation are related to these passively sensed contextual features.
 
-![User Studies](http://www.awareframework.com/wp-content/uploads/2014/05/aware_overview1.png)
+### Background
 
-The platform is scalable with plugins and can be integrated with other platforms using JSON, MQTT or MySQL.
+The project is a team of researchers studying the relationship between behavior patterns, emotion regulation, and emotion. They have previously used the AWARE app successfully in a study with 200 undergraduates, focusing on features such as location and phone use. However, they would like to optimize their use of this app for data collection to better understand the relationship between behavior patterns and emotional regulation.
 
-![Arquitecture](http://www.awareframework.com/wp-content/uploads/2015/12/aware-architecture.png)
+### Getting Started
 
-You can now refer to AWARE's functions inside your app.
+To participate in the study, participants will need to download the AWARE app on their smartphone. The app is available for download on Google Play Store for free, and a custom built App store AWARE app. Participants will also need to agree to receive survey prompts every two hours through a separate app.
 
-### Individuals: Record your own data
-No programming skills are required. The mobile application allows you to enable or disable sensors and plugins. The data is saved locally on your mobile phone. Privacy is enforced by design, so AWARE does not log personal information, such as phone numbers or contacts information. You can additionally install plugins that will further enhance the capabilities of your device, straight from the client.
+### Data Privacy
 
-### Scientists: Run studies
-Running a mobile related study has never been easier. Install AWARE on the participants phone, select the data you want to collect and that is it. If you use the AWARE dashboard, you can request your participants’ data, check their participation and remotely trigger mobile ESM (Experience Sampling Method) questionnaires, anytime and anywhere from the convenience of your Internet browser. The framework does not record the data you need? Check our tutorials to learn how to create your own plugins, or just contact us to help you with your study! Our research group is always willing to collaborate.
+The project takes data privacy seriously and complies with all necessary legal and ethical standards. All data collected through the AWARE app is anonymized and stored securely in a database. Participants have full control over their data and can choose to withdraw from the study at any time.
 
-### Developers: Make your apps smarter
-Nothing is more stressful than to interrupt a mobile phone user at the most unfortunate moments. AWARE provides application developers with user’s context using AWARE’s API. AWARE is available as an Android library. User’s current context is shared at the operating system level, thus empowering richer context-aware applications for the end-users.
+### Data Analysis
 
-## How To Use
-* [Development | UI](http://www.awareframework.com/introduction-of-aware-ios-client/)
-* [Development | Sensors & Plugins](https://github.com/tetujin/AWAREFramework-iOS)
-* [Distribution Methods](http://www.awareframework.com/distributing-methods-of-aware-ios/)
-* [ESM | URL](http://www.awareframework.com/schedule-esms-for-aware-ios-client/)
-* [ESM | Calendar Scheduler](https://github.com/tetujin/AWAREFramework-iOS/tree/master/AWAREFramework/Classes/Plugins/CalendarESMScheduler)
-* [ESM | Hard Coding](https://github.com/tetujin/AWAREFramework-iOS)
+The project will use machine learning algorithms to analyze the sensor data collected from participants' smartphones. The analysis aims to identify behavior patterns such as physical activity, sleep, and social interaction, among others. The project will then analyze this data in relation to the emotion and emotion regulation data collected through surveys.
 
-## Author
-AWARE Client iOS (Version 2) is developed by [Yuuki Nishiyama](http://www.yuukinishiyama.com/) (Community Imaging Group, University of Oulu). Also, [AWARE framework](http://www.awareframework.com/) and [AWARE Framework client](https://github.com/denzilferreira/aware-client) (for Android) were created by [Denzil Ferreira](http://www.denzilferreira.com/) (Community Imaging Group, University of Oulu) and his group originally.
+### Contributing
 
-## Related links
-* [AWARE Framework Official Home Page](http://www.awareframewrok.com)
-* [aware-client-ios-v2 on AppStore](https://itunes.apple.com/jp/app/aware-client-v2/id1455986181)
-* [aware-library-ios](https://github.com/tetujin/AWAREFramework-iOS)
-* [aware-client-ios-v1](https://github.com/tetujin/aware-client-ios)
-* [aware-client-Android](https://github.com/denzilferreira/aware-client)
-
-
-## Citation
-Please cite the following paper(s) in your publications if it helps your research. 
-
-```
-@InProceedings{aware_ios,
-    author={Nishiyama, Yuuki and Ferreira, Denzil and Eigen, Yusaku and Sasaki, Wataru and Okoshi, Tadashi and Nakazawa, Jin and Dey, Anind K. and Sezaki, Kaoru},
-    title={IOS Crowd--Sensing Won't Hurt a Bit!: AWARE Framework and Sustainable Study Guideline for iOS Platform},
-    booktitle={Distributed, Ambient and Pervasive Interactions},
-    year={2020},
-    pages={223--243},
-    isbn={978-3-030-50344-4},
-    doi={10.1007/978-3-030-50344-4_17},
-}
-
-@inproceedings{aware_ios_in_the_wild,
-    author = {Nishiyama, Yuuki and Ferreira, Denzil and Sasaki, Wataru and Okoshi, Tadashi and Nakazawa, Jin and Dey, Anind K. and Sezaki, Kaoru},
-    title = {Using IOS for Inconspicuous Data Collection: A Real-World Assessment},
-    year = {2020},
-    doi = {10.1145/3410530.3414369},
-    booktitle = {Adjunct Proceedings of the 2020 ACM International Joint Conference on Pervasive and Ubiquitous Computing and Proceedings of the 2020 ACM International Symposium on Wearable Computers},
-    pages = {261–266},
-    numpages = {6},
-    series = {UbiComp-ISWC '20}
-}
-```
-
-## License
-Copyright (c) 2019 AWARE Mobile Context Instrumentation Middleware/Framework for iOS (http://www.awareframework.com)
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+If you are interested in contributing to the study or have any questions, please contact the project at [email address]. They welcome collaborations with researchers and institutions interested in understanding the relationship between behavior patterns and emotion regulation
+<img src="https://blogs.unimelb.edu.au/aware-light/files/2020/10/image-10.png" alt="Alt text" title="Optional title"> 
 
