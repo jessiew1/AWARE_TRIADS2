@@ -1,0 +1,11 @@
+framework module LocationKit {
+  umbrella header "LocationKit.h"
+  export *
+
+  module * { export * }
+}
+
+module LocationKit.Swift {
+  header "LocationKit-Swift.h"
+  requires objc
+}
