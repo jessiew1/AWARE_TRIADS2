@@ -5,6 +5,7 @@
 //  Created by JessieW on 11/10/23.
 //  Copyright © 2023 Yuuki Nishiyama. All rights reserved.
 //
+// With respect to the other files, "Locs2.swift just test location detection - no connection with any specific location"
 import CoreLocation
 import UserNotifications
 import MapKit
