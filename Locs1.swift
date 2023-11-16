@@ -1,3 +1,8 @@
+//As of Version 2.1 Build 5, this is the driving file for the location tests
+//The major thing here is the definition of targetAddress (line 18)
+//which is the center of Danforth Campus at WashU
+//around this address, we start a 25 mile radius and grab any sublocalities when the
+//gps location is updated
 import CoreLocation
 import UserNotifications
 import MapKit
