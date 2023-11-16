@@ -54,13 +54,17 @@ class GeofenceManager: NSObject, CLLocationManagerDelegate {
                 return
             }
 
+            //define the single survey location as the address of Danforth campus and the radius of 25 miles
             let surveyLocation = SurveyLocation(name: "Target Area", coordinate: location.coordinate, radius: strongSelf.targetRadius)
+
+            //send in an array of length 1 (the danforth campus address) to setupGeoFences
             strongSelf.setupGeofences(surveyLocations: [surveyLocation])
         }
     }
 
     func setupGeofences(surveyLocations: [SurveyLocation]) {
         self.surveyLocations = surveyLocations
+
         for location in surveyLocations {
             let geofenceRegion = CLCircularRegion(center: location.coordinate, radius: location.radius, identifier: location.name)
             geofenceRegion.notifyOnEntry = true
