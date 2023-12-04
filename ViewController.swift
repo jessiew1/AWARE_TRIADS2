@@ -8,15 +8,26 @@
 
 import UIKit
 import AWAREFramework
+import Speech
 import SafariServices
-import UserNotifications
+import CoreLocation
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, CLLocationManagerDelegate, SFSafariViewControllerDelegate, UNUserNotificationCenterDelegate {
+    
 
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var latitudeLabel: UILabel!
+    @IBOutlet weak var longitudeLabel: UILabel!
+    @IBOutlet weak var courseLabel: UILabel!
+    @IBOutlet weak var speedLabel: UILabel!
+    @IBOutlet weak var altitudeLabel: UILabel!
+    @IBOutlet weak var addressLabel: UILabel!
+      
+    //var locationManager = CLLocationManager()
     
     let sensorManager = AWARESensorManager.shared()
-    
+    let manager = AWARESensorManager.shared()
+    let core = AWARECore.shared()
     var refreshTimer:Timer?
     var refreshInterval = 0.5
     
@@ -26,71 +37,47 @@ class ViewController: UIViewController {
     var selectedRowContent:TableRowContent?
     
     @IBOutlet weak var uploadButton: UIBarButtonItem!
- 
 
+    var geofenceManager: GeofenceManager?
+    var neighborhoodLocator: NeighborhoodLocator?
+    //manager.add(Conversation_Sensor)
+    //manager.startAllSensors()
+    
+    
+    // Declare the notificationScheduler within the ViewController scope
+       //let notificationScheduler = NotificationScheduler()
     override func viewDidLoad() {
-            super.viewDidLoad()
-            tableView.delegate = self
-            tableView.dataSource = self
-            
-        // Request permission to send notifications
-               UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
-                   if granted {
-                       DispatchQueue.main.async {
-                           self.scheduleNotifications()
-                       }
-                   } else if let error = error {
-                       print("Permission not granted: \(error)")
-                   }
-               }
-               
-               // Make sure to set the UNUserNotificationCenter delegate somewhere appropriate, like in the AppDelegate
-               // UNUserNotificationCenter.current().delegate = self (if in this view controller)
-           }
-           
-           func scheduleNotifications() {
-               let notificationTimes = ["9:17", "9:30", "9:45", "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45", "12:00", "12:15", "12:30", "12:45", "13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45"]
-               
-               let notificationCenter = UNUserNotificationCenter.current()
-               
-               for timeString in notificationTimes {
-                   let components = timeString.split(separator: ":").map { String($0) }
-                   guard components.count == 2,
-                         let hour = Int(components[0]),
-                         let minute = Int(components[1]) else {
-                       print("Invalid time format for \(timeString)")
-                       continue
-                   }
-                   
-                   var dateComponents = DateComponents()
-                   dateComponents.hour = hour
-                   dateComponents.minute = minute
-                   
-                   let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
-                   
-                   let content = UNMutableNotificationContent()
-                   content.title = "Time to take the survey!"
-                   content.body = "Tap to open the survey."
-                   content.sound = UNNotificationSound.default
-                   // Add the URL to the userInfo dictionary
-                   content.userInfo = ["url": "https://wustl.az1.qualtrics.com/jfe/form/SV_0HyB20WVoAztGTk"]
-                   
-                   let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-                   
-                   notificationCenter.add(request) { (error) in
-                       if let error = error {
-                           print("Error scheduling notification: \(error)")
-                       }
-                   }
-               }
-           }
-    
-
-    
-    
-    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidLoad()
+        // Ensure tableView is properly initialized and connected
+        tableView.delegate = self
+        tableView.dataSource = self
+        //requestSpeechRecognitionAuthorization()
+        requestNotificationAuthorization()
+        setupNoiseSensor()
+        neighborhoodLocator = NeighborhoodLocator()
+        // Step 2: Set Up Speech Recognizer
+        //setupSpeechRecognizer()
+        //startSensors() 
+        startAwareSensors()
+        startAwareSensors()
+        // Step 3: Start Monitoring
+        //startMonitoring()
+        //let conversationDetector = ConversationDetector()
+        NotificationManager.shared.scheduleTestNotification() // Schedule a test notification
+        //NotificationManager.shared.scheduleRandomNotificationsForMultipleDays (numberOfDays: 7)
+        //Conversation notification
+         //conversationDetector.startMonitoring()
+        //geofenceManager = GeofenceManager()
         
+        }
+
+
+
+    override func viewDidAppear(_ animated: Bool) {
+        //conversationDetector.stopMonitoring()
         AWARECore.shared().checkCompliance(with: self, showDetail: true)
+        // Start monitoring when the view appears
+        
         
         settings = getSettings()
         sensors.sort { (val1, val2) -> Bool in
@@ -138,6 +125,9 @@ class ViewController: UIViewController {
         NotificationCenter.default.removeObserver(googleLoginRequestObserver as Any)
         NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
+        // Stop monitoring when the view is about to disappear
+         //conversationDetector2?.stopMonitoring()
+        
     }
     
     @objc func willEnterForegroundNotification(notification: NSNotification) {
@@ -169,6 +159,7 @@ class ViewController: UIViewController {
         }
     }
     
+    
     func login(){
         let glogin = AWARESensorManager.shared().getSensor(SENSOR_PLUGIN_GOOGLE_LOGIN)
 //        if let login = glogin as? GoogleLogin{
@@ -176,7 +167,7 @@ class ViewController: UIViewController {
 //                let loginViewController = AWAREGoogleLoginViewController()
 //                loginViewController.googleLogin = login
 //                self.present(loginViewController, animated: true, completion: {
-//                    
+//
 //                })
 //            }
 //        }
@@ -187,7 +178,7 @@ class ViewController: UIViewController {
         
         if let next = segue.destination as? SensorSettingViewController,
            let content = self.selectedRowContent {
-            next.selectedContent = content            
+            next.selectedContent = content
         }
     
     }
@@ -247,6 +238,8 @@ class ViewController: UIViewController {
         
     }
 
+    
+  
     let sections = ["Study","Sensors"]
     
     var settings = Array<TableRowContent>()
@@ -451,6 +444,8 @@ class ViewController: UIViewController {
         return Array<TableRowContent>()
     }()
 }
+
+
 
 extension ViewController: UITableViewDataSource {
     
@@ -761,6 +756,9 @@ extension UIViewController {
     }
 }
 
+
+
+
 class TableRowContent {
     let identifier:String
     var height:CGFloat = 60
@@ -828,5 +826,5 @@ public class Language {
     func isEnglish() -> Bool {
         return self.get().contains("en") ? true : false
     }
-  
+
 }

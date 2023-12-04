@@ -9,11 +9,18 @@
 import UIKit
 import CoreData
 import AWAREFramework
+import SafariServices
+import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    func getUrl() -> String {
+        //Returns the URL of the AWARE study on which this application is running
+        return "https://research-dev.artsci.wustl.edu:8080/1/4lph4num3ric"
+    }
+  
 
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -21,13 +28,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let core    = AWARECore.shared()
         let manager = AWARESensorManager.shared()
         let study   = AWAREStudy.shared()
+        let studyurl = getUrl()
+        
+        //Declare, initialize AWARE sensors
+        let activity = IOSActivityRecognition(awareStudy: study)
+        let location = Locations(awareStudy: study)
+        let fuslocation = FusedLocations(awareStudy: study)
+        //let converstations = Conversation(awareStudy: study)
+        study.setStudyURL(studyurl)
 
+        //Setup background fetching interval
+        UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalMinimum)
+        
+        //Add AWARE sensors to the sensor manager
+        manager.add(activity)
+        manager.add(location)
+        manager.add(fuslocation)
+        //manager.add(conversation)
+        //manager.startAllSensors()
+        
         manager.addSensors(with: study)
         if manager.getAllSensors().count > 0 {
             core.setAnchor()
             if let fitbit = manager.getSensor(SENSOR_PLUGIN_FITBIT) as? Fitbit {
                 fitbit.viewController = window?.rootViewController
             }
+
             core.activate()
             manager.add(AWAREEventLogger.shared())
             manager.add(AWAREStatusMonitor.shared())
@@ -36,7 +62,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 
             }
         }
+        
+        
+        class AppDelegate: UIResponder, UIApplicationDelegate {
 
+            var window: UIWindow?
+
+            func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+                // Request notification permissions
+               
+             
+                
+                
+                
+                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+                    if granted {
+                        print("Notification permissions granted.")
+                    } else if let error = error {
+                        print("Error requesting notification permissions: \(error)")
+                    }
+                }
+               
+
+                return true
+                
+            }
+            
+          
+        
+        }
+        
         IOSESM.setESMAppearedState(false)
 
         let key = "aware-client-v2.setting.key.is-not-first-time"

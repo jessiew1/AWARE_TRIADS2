@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<gpx version="1.1" creator="Xcode">
+    
+    <wpt lat="34.711358" lon="-92.284333">
+        <name>Capitol View/Stifft's Station</name>
+        <time>2023-05-01T08:23:45Z</time>
+    </wpt>
+    <wpt lat="34.749435" lon="-92.338972">
+        <name>Chenal Valley</name>
+        <time>2023-05-01T09:15:30Z</time>
+    </wpt>
+    <wpt lat="34.737459" lon="-92.198972">
+        <name>East Little Rock</name>
+        <time>2023-05-01T10:05:15Z</time>
+    </wpt>
+    <wpt lat="34.741833" lon="-92.287056">
+        <name>Governor's Mansion District</name>
+        <time>2023-05-01T11:45:22Z</time>
+    </wpt>
+    <wpt lat="34.736667" lon="-92.27875">
+        <name>The Heights and Hillcrest</name>
+        <time>2023-05-01T12:30:10Z</time>
+    </wpt>
+    <wpt lat="34.674167" lon="-92.233333">
+        <name>Mabelvale</name>
+        <time>2023-05-01T13:20:05Z</time>
+    </wpt>
+    <wpt lat="34.741833" lon="-92.270556">
+        <name>MacArthur Park District</name>
+        <time>2023-05-01T14:10:50Z</time>
+    </wpt>
+    <wpt lat="34.737459" lon="-92.260556">
+        <name>Quapaw Quarter</name>
+        <time>2023-05-01T15:05:35Z</time>
+    </wpt>
+    <wpt lat="34.731833" lon="-92.260556">
+        <name>South Main Residential Historic District (SoMa)</name>
+        <time>2023-05-01T16:25:40Z</time>
+
+</gpx>

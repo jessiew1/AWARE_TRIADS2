@@ -1,6 +1,3 @@
-//Created by Jessie Walker 
-//11-01-2023 
-
 import Foundation
 import UserNotifications
 

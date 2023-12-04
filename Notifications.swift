@@ -1,84 +1,122 @@
+//
+//  Notifcations.swift
+//  PPS-Data
+//
+//  Created by Joshua Ren on 10/28/19.
+//  Copyright © 2019 Joshua Ren. All rights reserved.
+//
+
+import Foundation
+import UserNotifications
 import Foundation
 import UserNotifications
 
-let notificationCenter = UNUserNotificationCenter.current()
-
-func requestNotificationPermission(completion: @escaping (Bool) -> Void) {
-    notificationCenter.requestAuthorization(options: [.alert, .sound]) { granted, error in
-        if let error = error {
-            print("Error requesting notification permission: \(error.localizedDescription)")
-        }
-        completion(granted)
+func registerForPushNotifications() {
+    UNUserNotificationCenter.current()
+        .requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+            guard granted else {
+                print("Notification permission not granted")
+                return
+            }
+            DispatchQueue.main.async {
+                getNotificationSettings()
+                createPushNotifications()
+            }
     }
 }
 
-func scheduleNotification(title: String, body: String, timeInterval: TimeInterval, repeats: Bool, surveyNumber: Int) {
+private func helpCreateNotification(contentTitle: String, contentSubTitle: String, contentBody: String, dateHour: Int, dateMinutes: Int) {
+    var date = DateComponents()
+    date.hour = dateHour
+    date.minute = dateMinutes
+    
     let content = UNMutableNotificationContent()
-    content.title = title
-    content.body = body
+    content.title = contentTitle
+    content.subtitle = contentSubTitle
+    content.body = contentBody
     content.sound = .default
     
-    // Adding user info with survey number and URL
-    content.userInfo = ["surveyNumber": surveyNumber, "url": "https://wustl.az1.qualtrics.com/jfe/form/SV_0HyB20WVoAztGTk"]
+    let uuidString = UUID().uuidString
+    let trigger = UNCalendarNotificationTrigger(dateMatching: date, repeats: true)
+    let request = UNNotificationRequest(identifier: uuidString, content: content, trigger: trigger)
     
-    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: repeats)
-    let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-    
-    notificationCenter.add(request) { error in
+    UNUserNotificationCenter.current().add(request) { error in
         if let error = error {
-            print("Error scheduling notification: \(error.localizedDescription)")
+            print("Error in reminder: \(error.localizedDescription)")
         }
     }
 }
 
-func scheduleInitialNotification(withTimes times: [String]) {
-    let initialNotificationBody = "Your Surveys Times will be at: \(times.joined(separator: ", "))"
-    scheduleNotification(title: "Surveys Times", body: initialNotificationBody, timeInterval: 5, repeats: false, surveyNumber: 0)
-    print("Initial notification scheduled.")
+func createPushNotifications() -> [String : [[Int: Int]]] {
+    let contentTitles = ["Survey 1", "Survey 2", "Survey 3"]
+    let contentSubTitles = ["", "", ""]
+    let contentBodies = ["Time to take a survey! :)", "Time to take a survey! :)", "Time to take a survey! :)"]
+    
+    var dateHours = [Int]()
+    var dateMinutes = [Int]()
+    
+    for _ in 0..<3 {
+        let randomHour = Int.random(in: 0...23)
+        let randomMinute = Int.random(in: 0...59)
+        dateHours.append(randomHour)
+        dateMinutes.append(randomMinute)
+    }
+    
+    if contentTitles.count != contentSubTitles.count || contentSubTitles.count != contentBodies.count || contentBodies.count != dateHours.count || dateHours.count != dateMinutes.count {
+        print("\nERROR: Lengths of arrays do not match\n")
+        return [:]
+    }
+    
+    UNUserNotificationCenter.current().getPendingNotificationRequests { notifications in
+        if notifications.isEmpty {
+            for i in 0..<contentTitles.count {
+                helpCreateNotification(contentTitle: contentTitles[i], contentSubTitle: contentSubTitles[i], contentBody: contentBodies[i], dateHour: dateHours[i], dateMinutes: dateMinutes[i])
+            }
+        } else {
+            print("Notifications are already scheduled")
+        }
+    }
+    
+    return helpGetHours(titles: contentTitles, dateHours: dateHours, dateMinutes: dateMinutes)
+}
+private func getNotificationSettings() {
+    UNUserNotificationCenter.current().getNotificationSettings { settings in
+        guard settings.authorizationStatus == .authorized else { return }
+        print("Notifications are authorized")
+    }
 }
 
-func createPushNotifications() {
-    requestNotificationPermission { granted in
-        guard granted else {
-            print("Notification permission not granted.")
-            return
+private func helpGetHours(titles: [String], dateHours: [Int], dateMinutes: [Int]) -> [String : [[Int: Int]]] {
+    var nameToTimes = [String : [[Int : Int]]]()
+    for i in 0..<dateHours.count {
+        let curTitle = titles[i]
+        let curHour = dateHours[i]
+        let curMin = dateMinutes[i]
+        var timeComponents = [Int: Int]()
+        timeComponents[curHour] = curMin
+        if nameToTimes[curTitle] == nil {
+            nameToTimes[curTitle] = [timeComponents]
+        } else {
+            nameToTimes[curTitle]?.append(timeComponents)
         }
-        
-        let times = ["9:15", "9:30", "9:45", "10:00", "10:27", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45", "12:00", "12:15", "12:30", "12:45", "13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45"]
-        
-        for (_, timeString) in times.enumerated() {
-            let components = timeString.split(separator: ":")
-            guard components.count == 2,
-                  let hour = Int(components[0]),
-                  let minute = Int(components[1]) else {
-                print("Invalid time format for \(timeString)")
-                continue
-            }
-            
-            var dateComponents = Calendar.current.dateComponents([.year, .month, .day], from: Date())
-            dateComponents.hour = hour
-            dateComponents.minute = minute
-            
-            // Check if the time has already passed for today; if so, schedule for the next day
-            if let date = Calendar.current.date(from: dateComponents), date < Date() {
-                dateComponents.day! += 1
-            }
-            
-            let i = 0 // or whatever your loop index is
-            let surveyTitle = "Random Survey \(i + 1)"
-            let surveyBody = "Time to take a survey! Number: \(i + 1)"
-            let hyperlink = "<a href=\"https://wustl.az1.qualtrics.com/jfe/form/SV_0HyB20WVoAztGTk\" title=\"\(surveyTitle)\">\(surveyBody)</a>"
+    }
+    return nameToTimes
+}
 
-            
-            if let triggerDate = Calendar.current.date(from: dateComponents) {
-                let timeInterval = triggerDate.timeIntervalSinceNow
-                if timeInterval > 0 { // Schedule only if the time is in the future
-                    scheduleNotification(title: surveyTitle, body: surveyBody, timeInterval: timeInterval, repeats: false, surveyNumber: i + 1)
-                }
-            }
+func getNotificationTimes() -> [String : [[Int: Int]]] {
+    return createPushNotifications()
+}
+
+func removeNotifications() {
+    UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+    UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+}
+
+func listPendingNotifications() {
+    UNUserNotificationCenter.current().getPendingNotificationRequests { notifications in
+        for notification in notifications {
+            print(notification)
         }
-        
-        // Schedule the initial notification with the times
-        scheduleInitialNotification(withTimes: times)
+        print("Existing notifications count: ", notifications.count, "\n")
     }
 }
