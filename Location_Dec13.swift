@@ -211,7 +211,7 @@ class LocationHandler: NSObject, CLLocationManagerDelegate {
             
             for feature in features {
                 if let properties = feature["properties"] as? [String: Any],
-                   let neighborhoodName = properties["NHD_NAME"] as? String,
+                   let neighborhoodName = properties["NAMELSAD"] as? String,
                    let geometry = feature["geometry"] as? [String: Any],
                    let type = geometry["type"] as? String,
                    type == "Polygon",
