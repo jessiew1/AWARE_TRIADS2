@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<gpx version="1.1" creator="Xcode">
+    <wpt lat="38.627" lon="-90.1994">
+        <time>2023-12-14T14:19:25Z</time>
+        <name>Point 1</name>
+        <desc>Description of Mount Pleasant</desc>
+      </wpt>
+      <wpt lat="38.637" lon="-90.2094">
+        <time>2023-12-14T14:25:25Z</time>
+        <name>Point 2</name>
+        <desc>Description of DeBaliviere Place</desc>
+      </wpt>
+      <wpt lat="38.647" lon="-90.21940000000001">
+        <time>2023-12-14T14:31:25Z</time>
+        <name>Point 3</name>
+        <desc>Description of Academy</desc>
+      </wpt>
+      <wpt lat="38.657" lon="-90.22940000000001">
+        <time>2023-12-14T14:37:25Z</time>
+        <name>Point 4</name>
+        <desc>Description of Carondelet</desc>
+      </wpt>
+      <wpt lat="38.666999999999994" lon="-90.23940000000002">
+        <time>2023-12-14T14:43:25Z</time>
+        <name>Point 5</name>
+        <desc>Description of Midtown</desc>
+      </wpt>
+      <wpt lat="38.67699999999999" lon="-90.24940000000002">
+        <time>2023-12-14T14:49:25Z</time>
+        <name>Point 6</name>
+        <desc>Description of Franz Park</desc>
+      </wpt>
+      <wpt lat="38.68699999999999" lon="-90.25940000000003">
+        <time>2023-12-14T14:55:25Z</time>
+        <name>Point 7</name>
+        <desc>Description of The Greater Ville</desc>
+      </wpt>
+      <wpt lat="38.69699999999999" lon="-90.26940000000003">
+        <time>2023-12-14T15:01:25Z</time>
+        <name>Point 8</name>
+        <desc>Description of McKinley Heights</desc>
+      </wpt>
+      <wpt lat="38.70699999999999" lon="-90.27940000000004">
+        <time>2023-12-14T15:07:25Z</time>
+        <name>Point 9</name>
+        <desc>Description of North Riverfront</desc>
+      </wpt>
+      <wpt lat="38.716999999999985" lon="-90.28940000000004">
+        <time>2023-12-14T15:13:25Z</time>
+        <name>Point 10</name>
+        <desc>Description of South Hampton</desc>
+      </wpt>
+</gpx>
