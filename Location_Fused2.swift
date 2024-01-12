@@ -21,7 +21,7 @@ class LocationHandler: NSObject, CLLocationManagerDelegate, UNUserNotificationCe
     override init() {
         super.init()
         setupLocationManager()
-        sendTestNotification() // Call the test notification method here
+        //sendTestNotificationOnAppStart() // Schedule a test notification when the app starts
         if let fileURL = Bundle.main.url(forResource: "Neighborhoods-4", withExtension: "geojson") {
             self.neighborhoods = loadNeighborhoods(from: fileURL) ?? [:]
         } else {
@@ -34,6 +34,12 @@ class LocationHandler: NSObject, CLLocationManagerDelegate, UNUserNotificationCe
         // handleLocationUpdate(latitude: -30, longitude: 90)
     }
 
+    
+    // Method to send a test notification when the app starts
+     private func sendTestNotificationOnAppStart() {
+         let testContent = createNotificationContent(neighborhood: "Test Neighborhood", isReminder: true)
+         scheduleNotification(content: testContent, identifier: "TestNotificationOnAppStart", delay: 1)
+     }
     
     func countAndPrintNeighborhoodsInFile() {
         if let fileURL = Bundle.main.url(forResource: "Neighborhoods-4", withExtension: "geojson") {
@@ -217,6 +223,7 @@ class LocationHandler: NSObject, CLLocationManagerDelegate, UNUserNotificationCe
     }
 
 
+
     private func handleFiveMinutesStay(neighborhood: String) {
         let notificationContent = createNotificationContent(neighborhood: neighborhood)
         let notificationIdentifier = UUID().uuidString
@@ -229,13 +236,18 @@ class LocationHandler: NSObject, CLLocationManagerDelegate, UNUserNotificationCe
         scheduleNotification(content: reminderContent, identifier: "\(notificationIdentifier)-reminder", delay: 300)
     }
 
+    
+    
     private func createNotificationContent(neighborhood: String, isReminder: Bool = false) -> UNMutableNotificationContent {
         let notificationContent = UNMutableNotificationContent()
         notificationContent.title = isReminder ? "Reminder: Complete Survey" : "Time Spent Notification"
         let surveyURL = "https://wustl.az1.qualtrics.com/jfe/form/SV_0HyB20WVoAztGTk"
-        notificationContent.body = "You spent 5 minutes in \(neighborhood)." + (isReminder ? " Please complete the survey: \(surveyURL)" : " Tap for more info.")
+        notificationContent.body = "You spent 5 minutes in \(neighborhood)." +
+            (isReminder ? " Please complete the survey: \(surveyURL)" : " Tap for more info.")
         notificationContent.sound = UNNotificationSound.default
-        notificationContent.userInfo =  ["deep_link_url": surveyURL]
+
+        // Add the deep link URL to the userInfo dictionary
+        notificationContent.userInfo = ["deep_link_url": "https://wustl.az1.qualtrics.com/jfe/form/SV_0HyB20WVoAztGTk"]
         return notificationContent
     }
 
@@ -263,22 +275,22 @@ class LocationHandler: NSObject, CLLocationManagerDelegate, UNUserNotificationCe
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        // Existing logic (if any) for handling other notification responses
-
-        // New logic to handle the test notification
-        if let userInfo = response.notification.request.content.userInfo as? [String: AnyObject],
-           let urlString = userInfo["url"] as? String,
-           let url = URL(string: urlString),
-           response.notification.request.content.title == "Test Notification" {
-            // Open the URL if it's from the test notification
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        let userInfo = response.notification.request.content.userInfo
+        if let urlString = userInfo["deep_link_url"] as? String, let url = URL(string: urlString) {
+            DispatchQueue.main.async {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
         }
-
-        // Call the completion handler at the end of the method
+        
+        // Cancel the reminder notification if this was the initial notification
+        let identifier = response.notification.request.identifier
+        if !identifier.contains("-reminder") {
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier + "-reminder"])
+        }
+        
         completionHandler()
     }
 
-    
     private func stopTimer() {
         timer?.invalidate()
         timer = nil
@@ -328,7 +340,6 @@ class LocationHandler: NSObject, CLLocationManagerDelegate, UNUserNotificationCe
         }
     }
 
-    
     // Method to send a test notification
     private func sendTestNotification() {
         let notificationContent = UNMutableNotificationContent()
@@ -348,8 +359,6 @@ class LocationHandler: NSObject, CLLocationManagerDelegate, UNUserNotificationCe
             }
         }
     }
-
-    
   
     // New method to check if it's okay to send a notification
        private func canSendNotification() -> Bool {
